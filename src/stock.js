@@ -5,7 +5,7 @@ const stock = {
     },
 
     getStockPrice: function(input) {
-        let startingPoint = input.startingPoint;
+        let startingPoint = input.price;
         let rate = input.rate;
         let variance = input.variance;
 
