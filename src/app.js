@@ -4,14 +4,50 @@ const io = require("socket.io")(server);
 const stock = require("./stock");
 const PORT = process.env.REALTIME_PORT || 4321;
 
-let objects = [];
+
+
 io.on('connection', client => {
     console.log("A user connected!");
-    client.on('objects', data => {
-        objects = data
-    });
-    client.on('disconnect', () => { msg: "disconnected" });
+
+
+    // client.on('objects', data => {
+    //     console.log(data);
+    //     objects = data
+    // });
+    // client.on('disconnect', () => { msg: "disconnected" });
 });
+
+
+
+
+stock.getData().then(res => {
+    // console.log(res);
+    // returnData(res.data);
+
+    let objects = [];
+
+    setInterval(function() {
+        if (objects === undefined || objects.length == 0) {
+            res.data.map(object => {
+                let price = stock.getStockPrice(object);
+                stock.updatePrice(object.id, price).then(res => {
+                    objects.push(res);
+                })
+            });
+        } else {
+            objects.map(object => {
+                let price = stock.getStockPrice(object);
+                stock.updatePrice(object.id, price).then(res => {
+                    return object;
+                })
+            });
+        }
+        console.log("Sending back data");
+        io.emit("stocks", objects);
+    }, 5000);
+});
+
+
 
 // let cakes = [
 //     {
@@ -28,14 +64,24 @@ io.on('connection', client => {
 //     }
 // ];
 
-
-setInterval(function() {
-    objects.map(object => {
-        object.price = stock.getStockPrice(object);
-        return object;
-    });
-    io.emit("stocks", objects);
-}, 5000);
+// function returnData(objects) {
+//     setInterval(function() {
+//         objects.map(object => {
+//             object.startingPoint = stock.getStockPrice(object);
+//             stock.updatePrice(object.id, object.startingPoint).then(() => {
+//                 return object;
+//             })
+//         });
+//         io.emit("stocks", objects);
+//     }, 5000);
+// }
+// setInterval(function() {
+//     objects.map(object => {
+//         object.startingPoint = stock.getStockPrice(object);
+//         return object;
+//     });
+//     io.emit("stocks", objects);
+// }, 5000);
 
 
 server.listen(PORT, () => {
