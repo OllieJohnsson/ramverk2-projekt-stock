@@ -1,6 +1,19 @@
-// const request = require("request");
-
 const fetch = require("node-fetch");
+
+
+const randomAroundZero = function() {
+    return Math.random() > 0.5 ? 1 : -1;
+}
+
+
+const getStockPrice = function(input) {
+    let startingPoint = input.price;
+    let rate = input.rate;
+    let variance = input.variance;
+
+    return startingPoint * rate + variance * randomAroundZero();
+}
+
 
 const getData = async () => {
     let url = "https://proj-api.olliej.me/objects";
@@ -13,51 +26,32 @@ const getData = async () => {
     }
 };
 
-const updatePrice = async (objectId, price) => {
+
+const updatePrices = async (objects) => {
     let url = "https://proj-api.olliej.me/updatePrice";
-    let params = JSON.stringify({objectId: objectId, price: price});
-    try {
-        const response = await fetch(url, {
-            method: "PUT",
-            body: params,
-            headers: {
-                'Content-type': 'application/json'
-            },
-        });
-        const json = await response.json();
-        return json;
-    } catch (error) {
-        return error;
-    }
-};
 
-async function fetchData() {
+    return await Promise.all(objects.map(async object => {
+        let price = getStockPrice(object);
+        let params = JSON.stringify({objectId: object.id, price: price});
 
-    await request("https://proj-api.olliej.me/objects", (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-          return "JSON.parse(body)";
+        try {
+            const response = await fetch(url, {
+                method: "PUT",
+                body: params,
+                headers: {
+                    'Content-type': 'application/json'
+                },
+            });
+            const json = await response.json();
+            return json;
+        } catch (error) {
+            return error;
         }
-    });
-}
-
-const stock = {
-
-    randomAroundZero: function() {
-        return Math.random() > 0.5 ? 1 : -1;
-    },
-
-    getStockPrice: function(input) {
-        let startingPoint = input.price;
-        let rate = input.rate;
-        let variance = input.variance;
-
-        return startingPoint * rate + variance * this.randomAroundZero();
-    },
-
-    fetchData: fetchData,
-    getData,
-    updatePrice
+    }));
 };
 
 
-module.exports = stock;
+module.exports = {
+    getData,
+    updatePrices
+};
