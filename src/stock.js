@@ -28,14 +28,14 @@ const getData = async () => {
 
 
 const updatePrices = async (objects) => {
-    let url = "https://proj-api.olliej.me/updatePrice";
+    let baseUrl = "https://proj-api.olliej.me";
 
     return await Promise.all(objects.map(async object => {
         let price = getStockPrice(object);
         let params = JSON.stringify({objectId: object.id, price: price});
 
         try {
-            const response = await fetch(url, {
+            const response = await fetch(`${baseUrl}/updatePrice`, {
                 method: "PUT",
                 body: params,
                 headers: {

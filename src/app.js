@@ -14,15 +14,32 @@ io.on('connection', client => {
 });
 
 
-stock.getData().then(res => {
-    let objects = [];
-    setInterval(function() {
-        stock.updatePrices(objects === undefined || objects.length == 0 ? res.data : objects).then(updated => {
-            objects = updated;
+// stock.getData().then(res => {
+//     let objects = [];
+//     setInterval(function() {
+//         stock.updatePrices(objects === undefined || objects.length == 0 ? res.data : objects).then(updated => {
+//             objects = updated;
+//             io.emit("stocks", objects);
+//         });
+//     }, 5000);
+// });
+
+
+
+
+
+setInterval(function() {
+    stock.getData().then(res => {
+        stock.updatePrices(res.data).then(objects => {
             io.emit("stocks", objects);
         });
-    }, 5000);
-});
+    });
+}, 5000);
+
+
+
+
+
 
 
 server.listen(PORT, () => {
