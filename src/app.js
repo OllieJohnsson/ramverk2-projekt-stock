@@ -34,7 +34,7 @@ setInterval(function() {
             io.emit("stocks", objects);
         });
     });
-}, 5000);
+}, 2000);
 
 
 

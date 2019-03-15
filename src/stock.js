@@ -11,7 +11,7 @@ const getStockPrice = function(input) {
     let rate = input.rate;
     let variance = input.variance;
 
-    return startingPoint * rate + variance * randomAroundZero();
+    return startingPoint * rate + (variance * randomAroundZero());
 }
 
 
