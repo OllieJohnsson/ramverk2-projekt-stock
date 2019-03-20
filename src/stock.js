@@ -20,7 +20,7 @@ const getData = async () => {
     try {
         const response = await fetch(url);
         const json = await response.json();
-        return json.data;
+        return json;
     } catch (error) {
         return error;
     }
@@ -51,21 +51,7 @@ const updatePrices = async (objects) => {
 };
 
 
-
-const getHistory = async (id) => {
-    let url = `https://proj-api.olliej.me/priceHistory/${id}`;
-    try {
-        const response = await fetch(url);
-        const json = await response.json();
-        return json;
-    } catch (error) {
-        return error;
-    }
-};
-
-
 module.exports = {
     getData,
-    updatePrices,
-    getHistory
+    updatePrices
 };
