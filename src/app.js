@@ -7,6 +7,7 @@ const PORT = process.env.REALTIME_PORT || 4321;
 
 io.on('connection', client => {
     console.log("A user connected!");
+    update();
 
     client.on('disconnect', () => {
         console.log("A user disconnected!");
@@ -14,14 +15,24 @@ io.on('connection', client => {
 });
 
 
-
-setInterval(function() {
+const update = () => {
     stock.getData().then(data => {
         stock.updatePrices(data).then(objects => {
             io.emit("stocks", objects);
         });
     })
-}, 60000);
+}
+
+
+// setInterval(function() {
+//     stock.getData().then(data => {
+//         stock.updatePrices(data).then(objects => {
+//             io.emit("stocks", objects);
+//         });
+//     })
+// }, 60000);
+
+setInterval(update, 60000);
 
 
 
